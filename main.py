@@ -12,3 +12,7 @@ if __name__ == "__main__":
     m_learner.base_dt(2)
     m_learner.best_dt(1)
     m_learner.best_dt(2)
+    print("Executing perceptron default")
+    m_learner.default_perceptron(1)
+    m_learner.default_perceptron(2)
+    print("Program done!")

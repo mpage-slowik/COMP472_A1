@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
+from sklearn.linear_model import Perceptron
 
 
 def gnb_predictor(ver):
@@ -51,3 +52,13 @@ def calculate_distribution(ver):
     X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
     df = pd.DataFrame({'index':Y})
     return df['index'].value_counts()
+
+def default_perceptron(ver):
+    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
+    X_test = data_manip.read_unindexed("./data/test_no_label_"+str(ver)+".csv")
+    per = Perceptron() # Default params
+    per.fit(X, Y)
+    output_arr = list()
+    for i in range(0,len(X_test)):
+        output_arr.append(per.predict([X_test[i]])[0])
+    data_manip.write_indexed("./output/PER-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
