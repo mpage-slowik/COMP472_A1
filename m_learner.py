@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
 
 
 def gnb_predictor(ver):
@@ -58,7 +59,13 @@ def default_perceptron(ver):
     X_test = data_manip.read_unindexed("./data/test_no_label_"+str(ver)+".csv")
     per = Perceptron() # Default params
     per.fit(X, Y)
-    output_arr = list()
-    for i in range(0,len(X_test)):
-        output_arr.append(per.predict([X_test[i]])[0])
+    output_arr = [per.predict([X])[0] for X in X_test]
     data_manip.write_indexed("./output/PER-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
+
+def base_multi_layered_perceptron(ver):
+    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
+    X_test = data_manip.read_unindexed("./data/test_no_label_"+str(ver)+".csv")
+    mlp = MLPClassifier(hidden_layer_sizes=(100,), activation="logistic", solver='sgd')
+    mlp.fit(X, Y)
+    output_arr = [mlp.predict([X])[0] for X in X_test]
+    data_manip.write_indexed("./output/Base-MLP-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
