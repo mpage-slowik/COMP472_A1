@@ -5,6 +5,8 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.linear_model import Perceptron
 from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
 
 def gnb_predictor(ver):
@@ -69,3 +71,17 @@ def base_multi_layered_perceptron(ver):
     mlp.fit(X, Y)
     output_arr = [mlp.predict([X])[0] for X in X_test]
     data_manip.write_indexed("./output/Base-MLP-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
+
+def best_multi_layered_perceptron(ver):
+    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
+    X_test = data_manip.read_unindexed("./data/test_no_label_"+str(ver)+".csv")
+    mlp = MLPClassifier()
+    parameters = {
+        'hidden_layer_sizes': [(30, 50), (10, 10 ,10)],
+        'activation': ['identity', 'logistic', 'tanh', 'relu'],
+        'solver': ['sgd', 'adam']
+    }   
+    gridMLP = GridSearchCV(mlp, parameters)
+    gridMLP.fit(X, Y)
+    output_arr = [gridMLP.predict([X])[0] for X in X_test]
+    data_manip.write_indexed("./output/Best-MLP-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
