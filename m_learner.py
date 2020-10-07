@@ -1,3 +1,4 @@
+from numpy.lib.function_base import average
 import data_manip
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ from sklearn import tree
 from sklearn.linear_model import Perceptron
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix
 
 
 def gnb_predictor(ver):
@@ -38,18 +39,27 @@ def best_dt(ver):
     class weight: None and balanced
     """
     X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test = data_manip.read_unindexed("./data/test_no_label_"+str(ver)+".csv")
+    X_test, Y_test= data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
     dtc = tree.DecisionTreeClassifier()
-    dtc.max_depth=10
+    dtc.max_depth=85
     dtc.criterion="entropy"
-    # dtc.min_samples_split=4
-    # dtc.min_impurity_decrease=2.0
-    # dtc.class_weight="balanced"
+    dtc.min_samples_split=5
+    dtc.min_impurity_decrease=0.00025
+    dtc.class_weight=None
     dtc.fit(X,Y)
     output_arr = []
     for i in range(0,len(X_test)) :
         output_arr.append(dtc.predict([X_test[i]])[0])
+    calculate_metrics(Y_test,output_arr)
     data_manip.write_indexed("./output/Best-DT-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
+
+def calculate_metrics(actual,expected):
+    print(accuracy_score(actual,expected))
+    print(recall_score(actual,expected,average='weighted'))
+    print(precision_score(actual,expected,average='weighted'))
+    print(f1_score(actual,expected,average='weighted'))
+    print(confusion_matrix(actual,expected))
+
 
 def calculate_distribution(ver):
     X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
