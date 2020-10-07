@@ -7,7 +7,7 @@ from sklearn import tree
 from sklearn.linear_model import Perceptron
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix, precision_recall_fscore_support 
 
 
 def gnb_predictor(ver):
@@ -54,11 +54,15 @@ def best_dt(ver):
     data_manip.write_indexed("./output/Best-DT-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
 
 def calculate_metrics(actual,expected):
-    print(accuracy_score(actual,expected))
-    print(recall_score(actual,expected,average='weighted'))
-    print(precision_score(actual,expected,average='weighted'))
-    print(f1_score(actual,expected,average='weighted'))
     print(confusion_matrix(actual,expected))
+
+    # print(recall_score(actual,expected,average='weighted'))
+    # print(precision_score(actual,expected,average='weighted'))
+    print(precision_recall_fscore_support(actual,expected,average=None))
+
+    print(accuracy_score(actual,expected))
+    print(f1_score(actual,expected,average='macro'))
+    print(f1_score(actual,expected,average='weighted'))
 
 
 def calculate_distribution(ver):
