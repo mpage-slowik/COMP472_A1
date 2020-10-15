@@ -105,9 +105,9 @@ def best_multi_layered_perceptron(ver):
     X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
     mlp = MLPClassifier(max_iter=400)
     parameters = {
-        'hidden_layer_sizes': [(30,30,30) ,(100,)],
-        'activation': ['relu'],
-        'solver': ['sgd']
+        'hidden_layer_sizes': [(30,50)],
+        'activation': ['tanh','identity'],
+        'solver': ['sgd','adam']
     }   
     gridMLP = GridSearchCV(mlp, parameters)
     gridMLP.fit(X, Y)
@@ -126,23 +126,16 @@ def plot_lib():
     for file in os.listdir(folder):
         df = pd.read_csv(os.path.join(folder,file))
 
-        if '1' in file:
-            plot_bars(1,df['fscore'],pos,bar_width,df['class'],file.split('.')[0])
+        if '1' in file:            
+            plot_bars(1,df['precision'],pos,bar_width,df['class'],file.split('.')[0])
+            plot_bars(2,df['recall'],pos,bar_width,df['class'],file.split('.')[0])
+            plot_bars(3,df['fscore'],pos,bar_width,df['class'],file.split('.')[0])
             pos+=(bar_width)
-
-            # plt.figure(1, (10,100))
-            # df['precision'] = pd.Series([(val*100) for val in df['precision']])
-            # plt.xticks(np.arange(0,26,1))
-            # plt.yticks(np.arange(0,110,10))
-            # plt.plot(df['precision'])
         else:
-            plot_bars(2,df['fscore'],pos2,bar_width,df['class'],file.split('.')[0])
+            plot_bars(4,df['precision'],pos2,bar_width,df['class'],file.split('.')[0])
+            plot_bars(5,df['recall'],pos2,bar_width,df['class'],file.split('.')[0])
+            plot_bars(6,df['fscore'],pos2,bar_width,df['class'],file.split('.')[0])
             pos2+=(bar_width)
-
-            # plt.figure(2, (10,100))
-            # plt.xticks(np.arange(0,10,1))
-            # plt.yticks(np.arange(0,110,10))
-            # plt.bar(df['class'],df['precision'],label=file)#.plot(df['precision'])
 
     plt.show()
 

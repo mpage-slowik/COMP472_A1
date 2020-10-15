@@ -28,4 +28,4 @@ if __name__ == "__main__":
     # m_learner.best_multi_layered_perceptron(2)
     # print("\nProgram done!")
     # for plotting
-    # plot_lib()
+    plot_lib()
