@@ -103,15 +103,22 @@ def base_multi_layered_perceptron(ver):
 def best_multi_layered_perceptron(ver):
     X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
     X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
-    mlp = MLPClassifier(max_iter=400)
-    parameters = {
-        'hidden_layer_sizes': [(30,50)],
-        'activation': ['tanh','identity'],
-        'solver': ['sgd','adam']
-    }   
-    gridMLP = GridSearchCV(mlp, parameters)
-    gridMLP.fit(X, Y)
-    output_arr = [gridMLP.predict([X])[0] for X in X_test]
+    # for both datasets this is the opmimal hyper parameters
+    mlp = MLPClassifier(hidden_layer_sizes=(50, 50), activation="relu", solver='adam',max_iter=400)
+    # THIS IS USED TO FIND THE GOOD HYPERPARAMS
+    # mlp = MLPClassifier(max_iter=400)
+    # parameters = {
+    #     'hidden_layer_sizes': [(30,50), (50,50)],
+    #     'activation': ['identity', 'logistic', 'tanh', 'relu'],
+    #     'solver': ['sgd','adam']
+    # }   
+    # gridMLP = GridSearchCV(mlp, parameters)
+    # gridMLP.fit(X, Y)
+    # print("BEST PARAMS FOR: "+str(ver))
+    # print(gridMLP.get_params())
+    # output_arr = [gridMLP.predict([X])[0] for X in X_test]
+    mlp.fit(X, Y)
+    output_arr = [mlp.predict([X])[0] for X in X_test]
     data_manip.write_indexed("./output/Best-MLP-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
     calculate_metrics(Y_test,output_arr,ver,"./output/Best-MLP-DS"+str(ver)+".csv")
 

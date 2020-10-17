@@ -8,7 +8,7 @@ if __name__ == "__main__":
     dist_1 = m_learner.calculate_distribution(1)
     dist_2 = m_learner.calculate_distribution(2)
     # Once built can commment out to run plotting
-    # print("Executing GNB")
+    print("Executing GNB")
     # m_learner.gnb_predictor(1)
     # m_learner.gnb_predictor(2)
     # print("Executing Base Decision Tree")
@@ -23,9 +23,9 @@ if __name__ == "__main__":
     # print("Executing base multi layered perceptron")
     # m_learner.base_multi_layered_perceptron(1)
     # m_learner.base_multi_layered_perceptron(2)
-    # print("Executing best multi layered perceptron")
-    # m_learner.best_multi_layered_perceptron(1)
-    # m_learner.best_multi_layered_perceptron(2)
-    # print("\nProgram done!")
+    print("Executing best multi layered perceptron")
+    m_learner.best_multi_layered_perceptron(1)
+    m_learner.best_multi_layered_perceptron(2)
+    print("\nProgram done!")
     # for plotting
     plot_lib()
