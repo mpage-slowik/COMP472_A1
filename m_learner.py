@@ -15,46 +15,46 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix, precision_recall_fscore_support 
 
 
-def gnb_predictor(ver):
-    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
+def gnb_predictor(ver,inname,outname,testname):
+    X,Y = data_manip.read_indexed(inname)
+    X_test, Y_test = data_manip.read_indexed(testname)
     gnb = GaussianNB()
     gnb.fit(X,Y)
     output_arr = [gnb.predict([X])[0] for X in X_test]
-    data_manip.write_indexed("./output/GNB-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
-    calculate_metrics(Y_test,output_arr,ver,"./output/GNB-DS"+str(ver)+".csv")
+    data_manip.write_indexed(outname,pd.DataFrame({'index':output_arr}))
+    calculate_metrics(Y_test,output_arr,ver,outname)
 
 
-def base_dt(ver):
-    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
+def base_dt(ver,inname,outname,testname):
+    X,Y = data_manip.read_indexed(inname)
+    X_test, Y_test = data_manip.read_indexed(testname)
     dtc = tree.DecisionTreeClassifier()
     dtc.fit(X,Y)
     output_arr = [dtc.predict([X])[0] for X in X_test]
-    data_manip.write_indexed("./output/Base-DT-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
-    calculate_metrics(Y_test,output_arr,ver,"./output/Base-DT-DS"+str(ver)+".csv")
+    data_manip.write_indexed(outname,pd.DataFrame({'index':output_arr}))
+    calculate_metrics(Y_test,output_arr,ver,outname)
 
 
-def best_dt(ver):
+def best_dt(ver,inname,outname,testname):
     """
-    splitting criterion: gini and entropy
-    maximum depth of the tree: 10 and no maximum
+    splitting criterion:  entropy
+    maximum depth of the tree: 85
     minimum number of samples to split an internal node: experiment with values of your choice
     minimum impurity decrease: experiment with values of your choice
     class weight: None and balanced
     """
-    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test, Y_test= data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
+    X,Y = data_manip.read_indexed(inname)
+    X_test, Y_test= data_manip.read_indexed(testname)
     dtc = tree.DecisionTreeClassifier()
-    dtc.max_depth=85
+    dtc.max_depth=None
     dtc.criterion="entropy"
     dtc.min_samples_split=5
     dtc.min_impurity_decrease=0.00025
     dtc.class_weight=None
     dtc.fit(X,Y)
     output_arr = [dtc.predict([X])[0] for X in X_test]
-    data_manip.write_indexed("./output/Best-DT-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
-    calculate_metrics(Y_test,output_arr,ver,"./output/Best-DT-DS"+str(ver)+".csv")
+    data_manip.write_indexed(outname,pd.DataFrame({'index':output_arr}))
+    calculate_metrics(Y_test,output_arr,ver,outname)
 
 
 def calculate_metrics(expected,actual,ver,fname):
@@ -62,7 +62,6 @@ def calculate_metrics(expected,actual,ver,fname):
         data_manip.add_performance(fname,confusion_matrix(expected,actual,labels=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]))
     else:
         data_manip.add_performance(fname,confusion_matrix(expected,actual,labels=[0,1,2,3,4,5,6,7,8,9]))
-
 
     # print(recall_score(actual,expected,average='weighted'))
     # print(precision_score(actual,expected,average='weighted'))
@@ -82,27 +81,27 @@ def calculate_distribution(ver):
     df = pd.DataFrame({'index':Y})
     return df['index'].value_counts()
 
-def default_perceptron(ver):
-    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
+def default_perceptron(ver,inname,outname,testname):
+    X,Y = data_manip.read_indexed(inname)
+    X_test, Y_test = data_manip.read_indexed(testname)
     per = Perceptron() # Default params
     per.fit(X, Y)
     output_arr = [per.predict([X])[0] for X in X_test]
-    data_manip.write_indexed("./output/PER-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
-    calculate_metrics(Y_test,output_arr,ver,"./output/PER-DS"+str(ver)+".csv")
+    data_manip.write_indexed(outname,pd.DataFrame({'index':output_arr}))
+    calculate_metrics(Y_test,output_arr,ver,outname)
 
-def base_multi_layered_perceptron(ver):
-    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
+def base_multi_layered_perceptron(ver,inname,outname,testname):
+    X,Y = data_manip.read_indexed(inname)
+    X_test, Y_test = data_manip.read_indexed(testname)
     mlp = MLPClassifier(hidden_layer_sizes=(100,), activation="logistic", solver='sgd',max_iter=400)
     mlp.fit(X, Y)
     output_arr = [mlp.predict([X])[0] for X in X_test]
-    data_manip.write_indexed("./output/Base-MLP-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
-    calculate_metrics(Y_test,output_arr,ver,"./output/Base-MLP-DS"+str(ver)+".csv")
+    data_manip.write_indexed(outname,pd.DataFrame({'index':output_arr}))
+    calculate_metrics(Y_test,output_arr,ver,outname)
 
-def best_multi_layered_perceptron(ver):
-    X,Y = data_manip.read_indexed("./data/train_"+str(ver)+".csv")
-    X_test, Y_test = data_manip.read_indexed("./data/test_with_label_"+str(ver)+".csv")
+def best_multi_layered_perceptron(ver,inname,outname,testname):
+    X,Y = data_manip.read_indexed(inname)
+    X_test, Y_test = data_manip.read_indexed(testname)
     # for both datasets this is the opmimal hyper parameters
     mlp = MLPClassifier(hidden_layer_sizes=(50, 50), activation="relu", solver='adam',max_iter=400)
     # THIS IS USED TO FIND THE GOOD HYPERPARAMS
@@ -119,8 +118,8 @@ def best_multi_layered_perceptron(ver):
     # output_arr = [gridMLP.predict([X])[0] for X in X_test]
     mlp.fit(X, Y)
     output_arr = [mlp.predict([X])[0] for X in X_test]
-    data_manip.write_indexed("./output/Best-MLP-DS"+str(ver)+".csv",pd.DataFrame({'index':output_arr}))
-    calculate_metrics(Y_test,output_arr,ver,"./output/Best-MLP-DS"+str(ver)+".csv")
+    data_manip.write_indexed(outname,pd.DataFrame({'index':output_arr}))
+    calculate_metrics(Y_test,output_arr,ver,outname)
 
 def plot_lib():
     folder = "./plot_data"
